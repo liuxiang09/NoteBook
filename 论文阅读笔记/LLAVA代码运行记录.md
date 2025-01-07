@@ -313,5 +313,10 @@ When visiting this location, which features a pier extending over a large body o
 
 > 个人经验：demo分为两部分：第一部分是加载模型，第二部分是评估模型，千万不要把两份代码写在一起，运行评估时必须注释掉前面的部分，不然必然导致CUDA显存溢出。当我把前半部分一注释掉，单独评估模型是不会导致显存溢出的！！
 
-六、[将模型下载到本地，并进行推理运行](https://blog.csdn.net/weixin_38252409/article/details/134183555)
+## 六、[将模型下载到本地，并进行推理运行](https://blog.csdn.net/weixin_38252409/article/details/134183555)
 
+![image-20250107113351052](LLAVA代码运行记录.assets/image-20250107113351052.png)
+
+> 把模型和图片的路径都换成本地路径即可，记得把clip模型也要下载下来，并且在llava模型的config文件里面也要修改对应的路径
+
+![image-20250107113457712](LLAVA代码运行记录.assets/image-20250107113457712.png)
