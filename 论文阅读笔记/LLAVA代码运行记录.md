@@ -13,6 +13,7 @@ cd LLaVA
 
 ```
 conda create -n llava python=3.10 -y
+source ~/.bashrc  (可选)
 conda activate llava
 pip install --upgrade pip  # enable PEP 660 support
 pip install -e .
@@ -42,8 +43,6 @@ pip install -e .
 # if you see some import errors when you upgrade,
 # please try running the command below (without #)
 # pip install flash-attn --no-build-isolation --no-cache-dir
-
-
 
 ```
 
@@ -142,7 +141,7 @@ python -c "import torch; import torchvision; import torchaudio; print(torch.__ve
 
 ------
 
-### **其他注意事项**
+### 其他注意事项
 
 - **确保 CUDA 运行正常**： 验证 PyTorch 是否正确检测到 GPU 和 CUDA：
 
