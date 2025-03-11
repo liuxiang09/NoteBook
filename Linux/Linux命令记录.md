@@ -397,3 +397,71 @@ cp -r source_folder destination
 - **移动**：`mv`
 - **查找**：`find`、`grep`、`locate`
 - **复制**：`cp`、`cp -r`
+
+## 四、deb包安装方法
+
+在Ubuntu系统中，安装`.deb`包的命令是`dpkg`。以下是具体的操作方法：
+
+### 使用`dpkg`命令安装
+
+bash复制
+
+```bash
+sudo dpkg -i [deb文件路径]
+```
+
+- `-i`参数表示安装。
+- 如果`[deb文件路径]`是文件名，确保当前目录下有该文件；如果是路径，请确保路径正确。
+
+#### 示例
+
+假设你有一个名为`example.deb`的文件在当前目录下，可以运行以下命令：
+
+bash复制
+
+```bash
+sudo dpkg -i example.deb
+```
+
+### 使用`apt`命令安装
+
+`dpkg`命令安装时可能会出现依赖问题，而`apt`可以自动解决依赖关系。如果使用`dpkg`安装后出现依赖错误，可以运行以下命令来修复：
+
+bash复制
+
+```bash
+sudo apt-get install -f
+```
+
+- `-f`参数表示修复损坏的包。
+
+### 使用`gdebi`命令安装（推荐）
+
+`gdebi`是一个更友好的工具，它会自动解决依赖问题。首先需要安装`gdebi`：
+
+bash复制
+
+```bash
+sudo apt-get install gdebi
+```
+
+然后使用以下命令安装`.deb`包：
+
+bash复制
+
+```bash
+sudo gdebi [deb文件路径]
+```
+
+#### 示例
+
+bash复制
+
+```bash
+sudo gdebi example.deb
+```
+
+### 注意事项
+
+- 确保你下载的`.deb`包来源可靠，避免安装恶意软件。
+- 如果安装过程中提示权限不足，请确保使用`sudo`命令获取管理员权限。

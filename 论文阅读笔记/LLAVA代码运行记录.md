@@ -319,3 +319,39 @@ When visiting this location, which features a pier extending over a large body o
 > 把模型和图片的路径都换成本地路径即可，记得把clip模型也要下载下来，并且在llava模型的config文件里面也要修改对应的路径
 
 ![image-20250107113457712](LLAVA代码运行记录.assets/image-20250107113457712.png)
+
+## 七、无法导入EncoderDecoderCache包：[Cannot import name 'EncoderDecoderCache' from 'transformers'](https://stackoverflow.com/questions/79273647/cannot-import-name-encoderdecodercache-from-transformers)
+
+一句命令解决：
+
+```bash
+pip install peft==0.10.0
+```
+
+## 八、一直出现显存溢出报错，把deepspeed从zero3修改为zero2即可
+
+> 其余的例如批量大小可以都调小一点，单张3090显卡训练起来比较吃力
+
+![image-20250208172138358](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250208172138358.png)
+
+![image-20250208171423720](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250208171423720.png)
+
+## 九、对更小的模型进行微调，因为13b的模型一定会导致显存溢出，所以我选择7b的模型
+
+> 下面是成功运行时的终端截图，我们还可以在wandb网站看到自己的epoch、loss等信息。
+
+![image-20250209161119593](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250209161119593.png)![image-20250209163829995](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250209163829995.png)
+
+## 十、训练完lora参数以后要将其与原始模型合并
+
+```bash
+python scripts/merge_lora_weights.py --model-path "/home/hpc/Desktop/LLaVA/checkpoints/llava-v1.5-13b-lora" \
+       --model-base "/home/hpc/Desktop/LLaVA/checkpoints/llava-v1.5-7b" \
+       --save-model-path "./checkpoints/llava-v1.5-7b-merged"
+```
+
+
+
+![image-20250209164737170](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250209164737170.png)![image-20250209165116912](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250209165116912.png)
+
+测试成功，第一次成功的微调！
