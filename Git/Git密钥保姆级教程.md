@@ -18,7 +18,7 @@
 
 > Git是一个开源的分布式版本控制系统，可以有效、高速的处理从很小到非常大的项目版本管理1。Git 是 Linus Torvalds 为了帮助管理 Linux 内核开发而开发的一个开放源码的版本控制**软件**。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/a889b56362764e85be18fcd8d0d8bc07.png)
+![在这里插入图片描述](images/a889b56362764e85be18fcd8d0d8bc07.png)
 
 二、什么是SSL？什么是公钥和密钥？
 ------------------
@@ -67,7 +67,6 @@
     # 你的Github绑定的邮箱
     ssh-keygen -t rsa -C "***@gmail.com"
     
-
 *   **3.获取SSH Key**
 
 根据命令行提示，进入文件夹，获取以`ssh-rsa`的字符串（包括`ssh-rsa`)  

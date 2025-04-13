@@ -19,11 +19,11 @@ pip install --upgrade pip  # enable PEP 660 support
 pip install -e .
 ```
 
-![image-20241228034456771](LLAVA代码运行记录.assets/image-20241228034456771.png)
+![image-20241228034456771](images/image-20241228034456771.png)
 
-![image-20241228034518764](LLAVA代码运行记录.assets/image-20241228034518764.png)
+![image-20241228034518764](images/image-20241228034518764.png)
 
-<img src="LLAVA代码运行记录.assets/image-20241228034534431.png" alt="image-20241228034534431" style="zoom:50%;" />
+<img src="images/image-20241228034534431.png" alt="image-20241228034534431" style="zoom:50%;" />
 
 
 
@@ -48,7 +48,40 @@ pip install -e .
 
 
 
-## 一、在本地配置llava环境时，会出现Pytorch和cuda版本不匹配，原因是Pytorch自动使用了系统中的11.8版本的CUDA
+## 一、在本地配置llava环境时,安装flash-attn阶段，会出现Pytorch和cuda版本不匹配的问题
+
+> 以上问题很可能包含在 ImportError：无法从“llava.model”导入名称“LlavaLlamaForCausalLM 这个问题中！！！隐藏很深，很难发现是flash的问题
+>
+> 最后查阅issues发现是大量软件包相互不兼容的问题，下面贴出一些在使用pip install -e . 之后还要继续修改的软件包
+>
+> "torch", "torchvision","transformers== 4.37.2" , "accelerate== 0.28.0","deepspeed ==0.14.4" 
+>
+> 最后的最后要注意：flash-attn<=2.6.3 这个是必须的，而直接通过命令安装会导致pytorch和cuda版本不匹配问题，所以又需要独特的安装命令 
+>
+> CUDA_HOME=/usr/local/cuda-11.8 pip install flash-attn==2.6.3 --no-build-isolation 测试只有这个命令可以解决问题，最后等待需要耐心，编译过程略微有点慢
+>
+> 最后测试在成功安装flash-attn的前提下，跑通了quickstart.py代码，现在可以开始跑微调了！！
+
+记录一下我最终成功时的运行环境：
+
+=== Python 环境信息 ===
+Python 版本: 3.10.16 (main, Dec 11 2024, 16:24:50) [GCC 11.2.0]
+
+=== CUDA 环境 ===
+CUDA_HOME: /usr/local/cuda
+PyTorch 版本: 2.1.2+cu121
+CUDA 是否可用: True
+CUDA 版本: 12.1
+GPU 设备: NVIDIA GeForce RTX 3090 Ti
+
+=== 关键包版本 ===
+transformers: 4.37.2
+accelerate: 0.28.0
+bitsandbytes: 0.45.4
+peft: 0.15.0
+flash-attn: 2.6.3
+deepspeed: 0.14.4
+torch: 2.1.2
 
 ### **1. 卸载当前 PyTorch**
 
@@ -64,11 +97,20 @@ pip uninstall torch torchvision torchaudio -y
 
 使用 PyTorch 官方的 `pip` 安装源指定 CUDA 12.1：
 
+（与GroundingDINO的兼容）
+
+`ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+groundingdino-py 0.4.0 requires supervision==0.6.0, but you have supervision 0.22.0 which is incompatible.
+llava 1.2.2.post1 requires accelerate==0.21.0, but you have accelerate 0.28.0 which is incompatible.
+llava 1.2.2.post1 requires torch==2.1.2, but you have torch 2.5.1+cu124 which is incompatible.
+llava 1.2.2.post1 requires torchvision==0.16.2, but you have torchvision 0.20.1+cu124 which is incompatible.`
+
 ```bash
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121   # 这样下载的pytorch版本与LLAVA不兼容
+pip install torch==2.0.0+cu118 torchvision==0.15.1+cu118 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
 
-pip install torch==2.1.2 torchvision==0.16.2 --index-url https://download.pytorch.org/whl/cu121 # 可以使用这种方式指定版本
+pip install torch==2.1.2+cu121 torchvision==0.16.2 --index-url https://download.pytorch.org/whl/cu121 # 可以使用这种方式指定版本
 
+pip install torch==2.5.1+cu124 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124 #groundingDINO
 ```
 
 这样，安装的 PyTorch 会包含其自带的 CUDA 12.1 库，不再依赖系统中安装的 CUDA 11.8。
@@ -104,6 +146,8 @@ print(torch.cuda.is_available())  # 确认 CUDA 是否可用
 2. **系统中的旧版本 CUDA**：安装 PyTorch 自带的 CUDA 库时，不会影响系统中已有的 CUDA 版本（如 11.8），它们可以共存。
 
 3. **安装其他依赖**：如果您还需要安装其他依赖（如 `flash-attn`），请确保它们与 PyTorch 的 CUDA 版本兼容。
+
+
 
 
 
@@ -182,7 +226,7 @@ export LD_LIBRARY_PATH=/home/hpc/anaconda3/envs/llava/lib/python3.10/site-packag
 
   如果希望每次打开终端时自动加载路径，可以将路径写入 `~/.bashrc` 文件。
 
-  #### **步骤：**
+#### **步骤：**
 
   1. 编辑 `~/.bashrc` 文件：
 
@@ -234,7 +278,7 @@ python -u "/home/hpc/Desktop/LLaVA/quick_start.py"
 
 #### **解决方法**
 
-![image-20241228174028784](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20241228174028784.png)
+![image-20241228174028784](images/image-20241228174028784.png)
 
 1. **检查网络连接** 通过以下命令确认能否访问 Hugging Face：
 
@@ -314,7 +358,7 @@ When visiting this location, which features a pier extending over a large body o
 
 ## 六、[将模型下载到本地，并进行推理运行](https://blog.csdn.net/weixin_38252409/article/details/134183555)
 
-![image-20250107113351052](LLAVA代码运行记录.assets/image-20250107113351052.png)
+![image-20250107113351052](images/image-20250107113351052.png)
 
 > 把模型和图片的路径都换成本地路径即可，记得把clip模型也要下载下来，并且在llava模型的config文件里面也要修改对应的路径
 
@@ -328,30 +372,81 @@ When visiting this location, which features a pier extending over a large body o
 pip install peft==0.10.0
 ```
 
-## 八、一直出现显存溢出报错，把deepspeed从zero3修改为zero2即可
+## 八、微调时一直出现显存溢出报错，把deepspeed从zero3修改为zero2即可
 
 > 其余的例如批量大小可以都调小一点，单张3090显卡训练起来比较吃力
 
-![image-20250208172138358](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250208172138358.png)
+![image-20250208172138358](images/image-20250208172138358.png)
 
-![image-20250208171423720](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250208171423720.png)
+![image-20250208171423720](images/image-20250208171423720.png)
 
 ## 九、对更小的模型进行微调，因为13b的模型一定会导致显存溢出，所以我选择7b的模型
 
 > 下面是成功运行时的终端截图，我们还可以在wandb网站看到自己的epoch、loss等信息。
 
-![image-20250209161119593](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250209161119593.png)![image-20250209163829995](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250209163829995.png)
+![image-20250209161119593](images/image-20250209161119593.png)![image-20250209163829995](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250209163829995.png)
 
 ## 十、训练完lora参数以后要将其与原始模型合并
 
 ```bash
-python scripts/merge_lora_weights.py --model-path "/home/hpc/Desktop/LLaVA/checkpoints/llava-v1.5-13b-lora" \
+python scripts/merge_lora_weights.py --model-path "/home/hpc/Desktop/LLaVA/checkpoints/llava-lora-mixed" \
        --model-base "/home/hpc/Desktop/LLaVA/checkpoints/llava-v1.5-7b" \
-       --save-model-path "./checkpoints/llava-v1.5-7b-merged"
+       --save-model-path "./checkpoints/llava-v"
 ```
 
 
 
-![image-20250209164737170](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250209164737170.png)![image-20250209165116912](/home/hpc/Desktop/NoteBook/论文阅读笔记/LLAVA代码运行记录.assets/image-20250209165116912.png)
+![image-20250209165116912](/home/hpc/Desktop/NoteBook/论文阅读笔记/images/image-20250209165116912.png)
 
 测试成功，第一次成功的微调！
+
+## 十一、RuntimeError: GET was unable to find an engine to execute this computation报错
+
+> 原因：系统中的CUDA版本为11.8，而llava中pytorch自带的cuda是12.1版本的，12.1版本对应的cudnn与11.8对应的cudnn不同，但同时conda环境中没有符合的cudnn，由此只能去系统中找，最后找到的版本不统一，导致报错。
+>
+> *# 更新 conda*
+>
+> conda update -n base conda
+>
+> *# 清理 conda 缓存*
+>
+> conda clean --all    清除的时候不要把package都给清除了
+>
+> *# 添加必要的通道*
+>
+> conda config --add channels conda-forge
+>
+> conda config --add channels nvidia
+>
+> *# 安装 cudnn*
+>
+> conda install cudnn=8.9.2 -c conda-forge
+>
+> 最后一步构建环境耗时很长，需要充足的耐心。如果报错可以多试几次，这个没办法
+
+![image-20250327195043331](/home/hpc/Desktop/NoteBook/论文阅读笔记/images/image-20250327195043331.png)
+
+使用脚本检查cuDNN的文件位置，在安装之前只有8.7.0，在装好之后就多了一个8.9.2，此时就不再会出现版本不匹配的问题了。
+
+
+
+![image-20250327213847332](/home/hpc/Desktop/NoteBook/论文阅读笔记/images/image-20250327213847332.png)
+
+## 十二、LLaVA与GroundingDINO的兼容
+
+`ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+groundingdino-py 0.4.0 requires supervision==0.6.0, but you have supervision 0.22.0 which is incompatible.
+llava 1.2.2.post1 requires accelerate==0.21.0, but you have accelerate 0.28.0 which is incompatible.
+llava 1.2.2.post1 requires torch==2.1.2, but you have torch 2.5.1+cu124 which is incompatible.
+llava 1.2.2.post1 requires torchvision==0.16.2, but you have torchvision 0.20.1+cu124 which is incompatible.`
+
+不能使用DINO的12.4的pytorch，必须使用来自LLaVA的121的pytorch。
+
+然后要注意，执行代码前通过set.py构建扩展：
+
+> 要求pytorch与CUDA_HOME的版本必须要匹配，结合前面要求的121，那么系统本地必须下载一个121版本的CUDA
+
+`python setup.py clean`
+`python setup.py build_ext --inplace`
+
+只有执行了这个命令才能不触发`NameError: name '_C' `报错，这个报错主要问题就出在CUDA和Pytorch的版本适配上。

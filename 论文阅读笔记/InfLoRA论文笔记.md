@@ -56,7 +56,7 @@
 
 ## 3. Methodology
 
-![image-20250113191518015](InfLoRA.assets/image-20250113191518015.png)
+![image-20250113191518015](images/image-20250113191518015.png)
 
 #### InfLoRA 与 LoRA 的主要区别
 
