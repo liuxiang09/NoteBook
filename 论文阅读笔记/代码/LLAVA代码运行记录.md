@@ -389,9 +389,9 @@ pip install peft==0.10.0
 ## 十、训练完lora参数以后要将其与原始模型合并
 
 ```bash
-python scripts/merge_lora_weights.py --model-path "/home/hpc/Desktop/LLaVA/checkpoints/llava-lora-mixed" \
+python scripts/merge_lora_weights.py --model-path "/home/hpc/Desktop/LLaVA/checkpoints/llava-LDS-lora" \
        --model-base "/home/hpc/Desktop/LLaVA/checkpoints/llava-v1.5-7b" \
-       --save-model-path "./checkpoints/llava-v"
+       --save-model-path "./checkpoints/llava-LDS-"
 ```
 
 

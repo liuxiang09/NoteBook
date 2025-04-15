@@ -56,7 +56,7 @@
 
 ## 3. Methodology
 
-![image-20250113191518015](images/image-20250113191518015.png)
+![image-20250113191518015](../Typora_images/image-20250113191518015.png)
 
 #### InfLoRA 与 LoRA 的主要区别
 
@@ -392,9 +392,9 @@ InfLoRA 借助 DualGPM 来维护旧任务梯度信息，并通过优化正交补
 
 ### 4.2. Experimental Results
 
-![image-20250209151935853](/home/hpc/Desktop/NoteBook/论文阅读笔记/InfLoRA.assets/image-20250209151935853.png)
+![image-20250209151935853](../Typora_images/image-20250209151935853.png)
 
-![image-20250209152154121](/home/hpc/Desktop/NoteBook/论文阅读笔记/InfLoRA.assets/image-20250209152154121.png)
+![image-20250209152154121](../Typora_images/image-20250209152154121.png)
 
 #### **1. 主要实验结果**
 
